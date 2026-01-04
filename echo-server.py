@@ -3,14 +3,20 @@ import socket
 HOST = "0.0.0.0"  # listening on all IPv4(?) interfaces
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
 
+connectedClients = {}
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
     s.listen()
     conn, addr = s.accept()
 
     with conn:
-        print(f"Connected by {addr}")
-      
+        login = conn.recv(1024)
+        clientName = f"{login.decode()}"
+        connectedClients[addr] = f"{clientName}"
+        print(f"Connected by {connectedClients[addr]} @ {addr}")
+
+
         while True:
             data = conn.recv(1024)
 

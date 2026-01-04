@@ -7,7 +7,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     print("Connected. Type 'quit' to exit")
 
+    login = input("Your Name: ")
+    s.sendall(login.encode())
     while True:
+
         message = input("Message: ")
 
         if message.lower() == "quit":
