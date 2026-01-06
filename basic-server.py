@@ -17,7 +17,8 @@ def main():
             conn, addr = s.accept()
             thread = threading.Thread(
                 target=handle_client,
-                args=(conn, addr)
+                args=(conn, addr),
+                daemon=True
             )
             thread.start()
 
@@ -25,28 +26,45 @@ def handle_client(conn, addr):
     login = conn.recv(1024)
     clientName = login.decode()
 
-    connectedClients[addr] = clientName
+    connectedClients[clientName] = conn
     print(f"{clientName} connected from {addr}")
 
-    while True:
-        data = conn.recv(1024)
-        if not data:
-            break
+    try:
+        while True:
+            data = conn.recv(1024)
+            if not data:
+                break
 
-        message = f"{data.decode()}"
+            message = f"{data.decode()}"
 
-        if message.lower() == "list users":
-            clients = f"{connectedClients}"
-            conn.sendall(clients.encode())
-            continue
-        
-        print(f"{clientName}: {message}")
-        conn.sendall(b"Message Received")
-        
+            if message.lower() == "list users":
+                clients = ", ".join(connectedClients.keys())
+                conn.sendall(clients.encode())
+                continue
 
-    print(f"{clientName} disconnected")
-    del connectedClients[addr]
-    conn.close()
+            if message.startswith("msg"):
+                _, target, *text = message.split()
+                text = " ".join(text)
+
+                if target in connectedClients:
+                    target_conn = connectedClients[target]
+                    target_conn.sendall(
+                        f"{clientName}: {text}".encode()
+                    )
+                    conn.sendall("Message Sent".encode())
+                    continue
+
+                else:
+                    conn.sendall("\nuser not found".encode())
+                    continue
+            
+            else:
+                conn.sendall("unknown command".encode())
+            
+    finally:
+        print(f"{clientName} disconnected")
+        del connectedClients[clientName]
+        conn.close()
 
 
 if __name__ == "__main__":
