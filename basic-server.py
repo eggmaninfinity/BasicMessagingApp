@@ -38,7 +38,7 @@ def handle_client(conn, addr):
             message = f"{data.decode()}"
 
             if message.lower() == "list users":
-                clients = ", ".join(connectedClients.keys())
+                clients = "\n--- Online Users ---\n" + "\n".join(connectedClients.keys())
                 conn.sendall(clients.encode())
                 continue
 
