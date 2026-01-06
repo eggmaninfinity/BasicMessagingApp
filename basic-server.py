@@ -69,6 +69,3 @@ def handle_client(conn, addr):
 
 if __name__ == "__main__":
     main()
-
-# TODO: lists other active users in dict, 
-# (for multi user: how does client know to listen for conn from other client?)
