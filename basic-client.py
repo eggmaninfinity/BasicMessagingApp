@@ -28,12 +28,17 @@ def receiveMessages(sock):
     while True:
         try:
             data = sock.recv(1024)
+
             if not data:
                 break
-            print(f"\n{data.decode()}")
+            
+            print(f"\n{data.decode()}", end="\nMessage: ")
         
         except:
             break
 
 if __name__ == "__main__":
     main()
+
+
+# TODO import argparse for cli definition of server ip and port
