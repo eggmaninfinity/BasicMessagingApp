@@ -43,14 +43,14 @@ docker-compose up -d messenger-server
 *(Using `run` ensures you catch the interactive name prompt immediately.)*
 
 4. **Shutdown:**
-* 'docker-compose down'
+* `docker-compose down`
 
 ## Technical Deep-Dive
 
 ### The Persistent Input Buffer
 
-To solve the common "text collision" problem in terminal-based chats, I implemented **`patch_stdout`**. This ensures that when the background listener thread receives a message, it clears the current line, prints the new message, and re-renders the user's current unsubmitted text seamlessly.
+To solve the common "text collision" problem in terminal-based chats, I implemented `patch_stdout`. This ensures that when the background listener thread receives a message, it clears the current line, prints the new message, and re-renders the user's current unsubmitted text seamlessly.
 
 ### Docker Orchestration
 
-The environment is managed via **`docker-compose.yml`**. Each client is isolated in its own container with **`tty: true`** and **`stdin_open: true`** enabled to support the interactive CLI session.
+The environment is managed via `docker-compose.yml`. Each client is isolated in its own container with `tty: true` and `stdin_open: true` enabled to support the interactive CLI session.
