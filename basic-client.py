@@ -3,6 +3,9 @@ import threading
 import os
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit import prompt
+from prompt_toolkit.patch_stdout import patch_stdout
+
 
 # Fallback to 127.0.0.1 if not in Docker
 HOST = os.getenv("SERVER_HOST", "127.0.0.1") 
@@ -18,19 +21,21 @@ def main():
 
         login = input("Your Name: ")
         s.sendall(login.encode())
+        print(f"Hello {login},\nType 'list users' to see who else is online!\nTo send a message use the following syntax:\nmsg <username> text")
         
         thread = threading.Thread(target=receiveMessages, args=(s,), daemon=True)
         thread.start()
 
         while True:
                 try:
-                    message = session.prompt("Message: ")
-                    
+                    with patch_stdout():
+                        message = session.prompt("Message: ")
+                        
 
-                    if message.lower() == "quit":
-                        break
-                
-                    s.sendall(message.encode())
+                        if message.lower() == "quit":
+                            break
+                    
+                        s.sendall(message.encode())
 
                 except KeyboardInterrupt:
                     break
@@ -43,7 +48,7 @@ def receiveMessages(sock):
             if not data:
                 break
             
-            print(f"\n{data.decode()}", end="\nMessage: ")
+            print(f"\n{data.decode()}")
         
         except:
             break
