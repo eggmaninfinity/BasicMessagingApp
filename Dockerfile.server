@@ -1,0 +1,6 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY basic-server.py .
+# Unbuffer output so you see logs in real-time
+ENV PYTHONUNBUFFERED=1 
+CMD ["python", "basic-server.py"]

@@ -1,0 +1,6 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY basic-client.py .
+ENV PYTHONUNBUFFERED=1
+# We use -u for unbuffered binary I/O
+CMD ["python", "-u", "basic-client.py"]

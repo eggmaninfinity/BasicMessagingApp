@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  messenger-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: chat-server
+    stdin_open: true
+    tty: true
+    # Map the port so you can also connect from your Mac terminal if you want
+    ports:
+      - "65535:65535"
+    networks:
+      - chat-net
+
+  alice:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: client-alice
+    # stdin_open and tty allow you to interact with the 'input()' prompt
+    stdin_open: true
+    tty: true
+    depends_on:
+      - messenger-server
+    environment:
+      - SERVER_HOST=messenger-server
+    networks:
+      - chat-net
+
+  bob:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: client-bob
+    stdin_open: true
+    tty: true
+    depends_on:
+      - messenger-server
+    environment:
+      - SERVER_HOST=messenger-server
+    networks:
+      - chat-net
+
+networks:
+  chat-net:
+    driver: bridge

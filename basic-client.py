@@ -1,8 +1,14 @@
 import socket
 import threading
+import os
+from prompt_toolkit import PromptSession
+from prompt_toolkit.history import InMemoryHistory
 
-HOST = "127.0.0.1"  # The server's hostname or IP address
-PORT = 65535  # The port used by the server
+# Fallback to 127.0.0.1 if not in Docker
+HOST = os.getenv("SERVER_HOST", "127.0.0.1") 
+PORT = 65535
+
+session = PromptSession(history=InMemoryHistory())
 
 def main():
 
@@ -17,12 +23,17 @@ def main():
         thread.start()
 
         while True:
-                message = input("Message: ")
+                try:
+                    message = session.prompt("Message: ")
+                    
 
-                if message.lower() == "quit":
+                    if message.lower() == "quit":
+                        break
+                
+                    s.sendall(message.encode())
+
+                except KeyboardInterrupt:
                     break
-            
-                s.sendall(message.encode())
             
 def receiveMessages(sock):
     while True:
